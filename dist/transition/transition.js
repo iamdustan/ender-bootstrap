@@ -26,25 +26,28 @@
     /* CSS TRANSITION SUPPORT (https://gist.github.com/373874)
      * ======================================================= */
 
+    // quick check to make sure support object exists
+    $.support = $.support || {}
+    
     $.support.transition = (function () {
       var thisBody = document.body || document.documentElement
         , thisStyle = thisBody.style
-        , support = thisStyle.transition !== undefined || thisStyle.WebkitTransition !== undefined || thisStyle.MozTransition !== undefined || thisStyle.MsTransition !== undefined || thisStyle.OTransition !== undefined
-
-      return support && {
-        end: (function () {
-          var transitionEnd = "TransitionEnd"
-          if ( $.browser.webkit ) {
-          	transitionEnd = "webkitTransitionEnd"
-          } else if ( $.browser.mozilla ) {
-          	transitionEnd = "transitionend"
-          } else if ( $.browser.opera ) {
-          	transitionEnd = "oTransitionEnd"
-          }
-          return transitionEnd
-        }())
+        , transitions = 'transition WebkitTransition MozTransition OTransition MsTransition'.split(' ')
+          
+          // transition end events from https://developer.mozilla.org/en/CSS/CSS_transitions#Browser_compatibility
+        , transitionEnd = 'TransitionEnd webkitTransitionEnd transitionend oTransitionend MSTransitionEnd'.split(' ')
+        , i = transitions.length
+        , support = false
+      while (i--) {
+        if (transitions[i] in thisStyle) {
+          support = transitions[i]
+          transitionEnd = transitionEnd[i]
+          break
+        }
       }
-    })()
 
+      return support && { end: transitionEnd }
+  
+    })()
   })
 }(require('ender-bootstrap-base'))
